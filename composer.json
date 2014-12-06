@@ -1,14 +1,13 @@
 {
     "name": "popphp/pop-crypt",
-    "description": "Pop Crypt Component for Pop PHP Framework 2",
+    "description": "Pop Crypt Component for Pop PHP Framework",
     "keywords": [
         "crypt",
         "bcrypt",
         "encryption",
         "php",
         "pop",
-        "pop php",
-        "pop php 2"
+        "pop php"
     ],
     "homepage": "http://www.popphp.org/",
     "license": "New BSD",
@@ -25,6 +24,11 @@
     "autoload": {
         "psr-4": {
             "Pop\\Crypt\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
         }
     }
 }
