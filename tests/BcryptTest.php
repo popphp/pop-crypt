@@ -56,12 +56,4 @@ class BcryptTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($bcrypt->verify($password, $hash));
     }
 
-    public function testCreateAndVerifyCustomSalt()
-    {
-        $password = '12password34';
-        $bcrypt = new Bcrypt('MySalt');
-        $hash = $bcrypt->create($password);
-        $this->assertTrue($bcrypt->verify($password, $hash));
-    }
-
 }
