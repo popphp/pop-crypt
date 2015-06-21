@@ -63,17 +63,19 @@ class Mcrypt extends AbstractCrypt
      *
      * Instantiate the mcrypt object.
      *
-     * @param  int $cipher
-     * @param  int $mode
-     * @param  int $source
+     * @param  string $salt
+     * @param  int    $cipher
+     * @param  int    $mode
+     * @param  int    $source
      * @throws Exception
      * @return self
      */
-    public function __construct($cipher = null, $mode = null, $source = null)
+    public function __construct($salt = null, $cipher = null, $mode = null, $source = null)
     {
         if (!function_exists('mcrypt_encrypt')) {
             throw new Exception('Error: The mcrypt extension is not installed.');
         }
+        $this->setSalt($salt);
         $this->setCipher($cipher);
         $this->setMode($mode);
         $this->setSource($source);

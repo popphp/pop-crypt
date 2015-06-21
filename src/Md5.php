@@ -33,14 +33,16 @@ class Md5 extends AbstractCrypt
      *
      * Instantiate the md5 object.
      *
+     * @param  string $salt
      * @throws Exception
      * @return self
      */
-    public function __construct()
+    public function __construct($salt = null)
     {
         if (CRYPT_MD5 == 0) {
             throw new Exception('Error: MD5 hashing is not supported on this system.');
         }
+        $this->setSalt($salt);
     }
 
     /**

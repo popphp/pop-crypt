@@ -45,39 +45,41 @@ class Sha extends AbstractCrypt
      *
      * Instantiate the sha object.
      *
-     * @param  int $bits
-     * @param  int $rounds
-     * @throws Exception
+     * @param  string $salt
+     * @param  int    $bits
+     * @param  int    $rounds
      * @return self
      */
-    public function __construct($bits = 512, $rounds = 5000)
+    public function __construct($salt = null, $bits = 512, $rounds = 5000)
     {
-        $this->setBits($bits);
+        if ($bits == 512) {
+            $this->setBits512();
+        } else {
+            $this->setBits256();
+        }
         $this->setRounds($rounds);
+        $this->setSalt($salt);
     }
 
     /**
-     * Method to set the cost
+     * Method to set the cost to 256 bits
      *
-     * @param  int $bits
-     * @throws Exception
      * @return self
      */
-    public function setBits($bits = 512)
+    public function setBits256()
     {
-        $bits = (int)$bits;
+        $this->bits = 256;
+        return $this;
+    }
 
-        if (($bits != 256) && ($bits != 512)) {
-            throw new Exception('Error: The bit setting must be 256 or 512');
-        }
-        if (($bits == 256) && (CRYPT_SHA256 == 0)) {
-            throw new Exception('Error: SHA 256 hashing is not supported on this system.');
-        }
-        if (($bits == 512) && (CRYPT_SHA512 == 0)) {
-            throw new Exception('Error: SHA 512 hashing is not supported on this system.');
-        }
-
-        $this->bits = $bits;
+    /**
+     * Method to set the cost to 512 bits
+     *
+     * @return self
+     */
+    public function setBits512()
+    {
+        $this->bits = 512;
         return $this;
     }
 

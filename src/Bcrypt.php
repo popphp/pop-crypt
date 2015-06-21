@@ -45,16 +45,18 @@ class Bcrypt extends AbstractCrypt
      *
      * Instantiate the bcrypt object.
      *
+     * @param  string $salt
      * @param  string $cost
      * @param  string $prefix
      * @throws Exception
      * @return self
      */
-    public function __construct($cost = '08', $prefix = '$2y$')
+    public function __construct($salt = null, $cost = '08', $prefix = '$2y$')
     {
         if (CRYPT_BLOWFISH == 0) {
             throw new Exception('Error: Blowfish hashing is not supported on this system.');
         }
+        $this->setSalt($salt);
         $this->setCost($cost);
         $this->setPrefix($prefix);
     }
