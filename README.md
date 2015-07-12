@@ -120,7 +120,7 @@ if ($sha->verify('my-password', $hash))  {} // Returns true
 ### Two-way encryption hashing with Mcrypt
 
 Mcrypt provides a way to create a two-way encryption hash, in which you can create an unreadable
-hash and then decrypt it later to retrieve the value of it.
+encrypted hash and then decrypt it later to retrieve the value of it.
 
 ```php
 $mcrypt = new Pop\Crypt\Mcrypt();
@@ -147,7 +147,11 @@ echo $hash;
 
 if ($mcrypt->verify('bad-password', $hash)) {} // Returns false
 if ($mcrypt->verify('my-password', $hash))  {} // Returns true
+```
 
+You can then retrieve the value of the hash by decrypting it:
+
+```php
 $decrypted = $mcrypt->decrypt($hash);
 
 // Outputs 'my-password'
