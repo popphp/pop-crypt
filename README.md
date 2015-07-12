@@ -76,8 +76,8 @@ to use that function for password hashing as it only generates a 32-character he
 and is vulnerable to dictionary attacks.
 
 As before, it's best to use a strong salt for better security. In fact, it's considered a best
-practice to use a strong random string as the salt, which the Md5 class generates
-automatically for you if you don't specify a salt.
+practice to use a strong random string as the salt. Like Bcrypt, the Md5 class will automatically
+generate a random salt for you if you don't specify one.
 
 ```php
 $md5  = new Pop\Crypt\Md5();
@@ -100,8 +100,8 @@ With the Sha class, you can set the bits (256 or 515) and rounds (between 1000 a
 which will affect the performance and strength of the hash.
 
 As before, it's best to use a strong salt for better security. In fact, it's considered a best
-practice to use a strong random string as the salt, which the Sha class generates
-automatically for you if you don't specify a salt.
+practice to use a strong random string as the salt. Like Bcrypt and Md5, the Sha class will
+automatically generate a random salt for you if you don't specify one.
 
 ```php
 $sha  = new Pop\Crypt\Sha();
@@ -136,8 +136,8 @@ $mcrypt->setCipher(MCRYPT_RIJNDAEL_256)
 ```
 
 As with the others, it's best to use a strong salt for better security. In fact, it's considered
-a best practice to use a strong random string as the salt, which the Mcrypt class generates
-automatically for you if you don't specify a salt.
+a best practice to use a strong random string as the salt. Like the others, the Mcrypt class will
+automatically generate a random salt for you if you don't specify one.
 
 ```php
 $hash = $mcrypt->create('my-password');
