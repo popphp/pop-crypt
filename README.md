@@ -53,7 +53,7 @@ values are between '04' and '31'.
 
 Again, it's best to use a strong salt for better security. In fact, it's considered a best
 practice to use a strong random string as the salt, which the Bcrypt class generates
-automatically for you if you don't specify a salt.
+automatically for you if you don't specify one.
 
 ```php
 $bcrypt = new Pop\Crypt\Bcrypt();
