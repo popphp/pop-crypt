@@ -2,6 +2,7 @@ pop-crypt
 =========
 
 [![Build Status](https://travis-ci.org/popphp/pop-crypt.svg?branch=master)](https://travis-ci.org/popphp/pop-crypt)
+[![Coverage Status](http://www.popphp.org/cc/coverage.php?comp=pop-crypt)](http://www.popphp.org/cc/pop-crypt/)
 
 OVERVIEW
 --------
