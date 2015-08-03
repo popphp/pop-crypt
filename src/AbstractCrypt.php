@@ -72,4 +72,40 @@ abstract class AbstractCrypt implements CryptInterface
 
         return $str;
     }
+
+    /**
+     * Get string length
+     *
+     * @param  string $string
+     * @return int
+     */
+    protected function strlen($string)
+    {
+        if (function_exists('mb_strlen')) {
+            return mb_strlen($string, '8bit');
+        } else {
+            return strlen($string);
+        }
+    }
+
+    /**
+     * Verify hash, timing-safe.
+     * Credit: Anthony Ferrara's (ircmaxell) password compat library:
+     * https://github.com/ircmaxell/password_compat
+     *
+     * @param  string $string
+     * @param  string $hash
+     * @return boolean
+     */
+    protected function verifyHash($string, $hash)
+    {
+        $status = 0;
+
+        for ($i = 0; $i < $this->strlen($string); $i++) {
+            $status |= (ord($string[$i]) ^ ord($hash[$i]));
+        }
+
+        return $status === 0;
+    }
+
 }

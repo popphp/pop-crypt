@@ -72,7 +72,7 @@ class Md5 extends AbstractCrypt
     public function verify($string, $hash)
     {
         $result = crypt($string, $hash);
-        return ($result === $hash);
+        return $this->verifyHash($result, $hash);
     }
 
 }

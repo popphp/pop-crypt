@@ -151,13 +151,15 @@ class Bcrypt extends AbstractCrypt
      */
     public function verify($string, $hash)
     {
-        $result = crypt($string, $hash);
+        $result       = crypt($string, $hash);
+        $resultLength = $this->strlen($result);
+        $hashLength   = $this->strlen($hash);
 
-        if (strlen($result) < 13) {
+        if (!is_string($result) || ($resultLength != $hashLength) || ($resultLength <= 13)) {
             throw new Exception('Error: There was an error with the bcrypt verification.');
         }
 
-        return ($result === $hash);
+        return $this->verifyHash($result, $hash);
     }
 
 }
