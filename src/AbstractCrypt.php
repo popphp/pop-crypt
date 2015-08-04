@@ -105,7 +105,7 @@ abstract class AbstractCrypt implements CryptInterface
             $status |= (ord($string[$i]) ^ ord($hash[$i]));
         }
 
-        return $status === 0;
+        return ($status === 0);
     }
 
 }

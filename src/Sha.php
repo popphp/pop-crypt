@@ -148,13 +148,17 @@ class Sha extends AbstractCrypt
      *
      * @param  string $string
      * @param  string $hash
-     * @throws Exception
      * @return boolean
      */
     public function verify($string, $hash)
     {
         $result = crypt($string, $hash);
-        return $this->verifyHash($result, $hash);
+
+        if (!is_string($string) || !is_string($result) || (strlen($result) != strlen($hash))) {
+            return false;
+        } else {
+            return $this->verifyHash($result, $hash);
+        }
     }
 
 }

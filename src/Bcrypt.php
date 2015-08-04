@@ -156,10 +156,10 @@ class Bcrypt extends AbstractCrypt
         $hashLength   = $this->strlen($hash);
 
         if (!is_string($result) || ($resultLength != $hashLength) || ($resultLength <= 13)) {
-            throw new Exception('Error: There was an error with the bcrypt verification.');
+            return false;
+        } else {
+            return $this->verifyHash($result, $hash);
         }
-
-        return $this->verifyHash($result, $hash);
     }
 
 }

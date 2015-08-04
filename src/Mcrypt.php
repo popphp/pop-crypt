@@ -221,21 +221,13 @@ class Mcrypt extends AbstractCrypt
      */
     public function verify($string, $hash)
     {
-        if ($this->ivSize == 0) {
-            $this->ivSize = mcrypt_get_iv_size($this->cipher, $this->mode);
+        $decrypted = $this->decrypt($hash);
+
+        if (!is_string($string) || !is_string($decrypted) || ($this->strlen($string) != $this->strlen($decrypted))) {
+            return false;
+        } else {
+            return $this->verifyHash($string, $decrypted);
         }
-
-        $decrypted = base64_decode($hash);
-
-        $this->iv = substr($decrypted, 0, $this->ivSize);
-        if (null === $this->salt) {
-            $this->salt = substr($decrypted, $this->ivSize);
-            $this->salt = substr($this->salt, 0, strpos($this->salt, '$'));
-        }
-        $decrypted = substr($decrypted, ($this->ivSize + strlen($this->salt) + 1));
-        $decrypted = trim(mcrypt_decrypt($this->cipher, $this->salt, $decrypted, $this->mode, $this->iv));
-
-        return ($string === $decrypted);
     }
 
 }
