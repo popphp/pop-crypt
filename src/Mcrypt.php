@@ -80,6 +80,21 @@ class Mcrypt extends AbstractCrypt
     }
 
     /**
+     * Set the salt
+     *
+     * @param  string $salt
+     * @throws Exception
+     * @return self
+     */
+    public function setSalt($salt = null)
+    {
+        if ((null !== $salt) && (strlen($salt) < 24)) {
+            throw new Exception('Error: The salt needs to be at least 24 characters in length.');
+        }
+        return parent::setSalt($salt);
+    }
+
+    /**
      * Set the cipher
      *
      * @param  int $cipher

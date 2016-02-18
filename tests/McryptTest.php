@@ -10,9 +10,9 @@ class McryptTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructor()
     {
-        $mcrypt = new Mcrypt('MySalt');
+        $mcrypt = new Mcrypt('MySaltIsAVeryLongSaltToUse');
         $this->assertInstanceOf('Pop\Crypt\Mcrypt', $mcrypt);
-        $this->assertEquals('MySalt', $mcrypt->getSalt());
+        $this->assertEquals('MySaltIsAVeryLongSaltToUse', $mcrypt->getSalt());
         $this->assertEquals(MCRYPT_RIJNDAEL_256, $mcrypt->getCipher());
         $this->assertEquals(MCRYPT_MODE_CBC, $mcrypt->getMode());
         $this->assertEquals(MCRYPT_RAND, $mcrypt->getSource());
@@ -22,7 +22,7 @@ class McryptTest extends \PHPUnit_Framework_TestCase
     public function testCreateAndVerify()
     {
         $password = '12password34';
-        $mcrypt   = new Mcrypt('MySalt');
+        $mcrypt   = new Mcrypt('MySaltIsAVeryLongSaltToUse');
         $hash     = $mcrypt->create($password);
         $this->assertTrue($mcrypt->verify($password, $hash));
         $this->assertNotNull($mcrypt->getIv());
@@ -41,10 +41,16 @@ class McryptTest extends \PHPUnit_Framework_TestCase
     public function testDecryptWithSalt()
     {
         $password = '12password34';
-        $mcrypt   = new Mcrypt('MySalt');
+        $mcrypt   = new Mcrypt('MySaltIsAVeryLongSaltToUse');
         $hash     = $mcrypt->create($password);
         $this->assertTrue($mcrypt->verify($password, $hash));
         $this->assertEquals('12password34', $mcrypt->decrypt($hash));
+    }
+
+    public function testShortSalt()
+    {
+        $this->setExpectedException('Pop\Crypt\Exception');
+        $mcrypt = new Mcrypt('MySalt');
     }
 
 }
