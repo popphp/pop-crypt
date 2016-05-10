@@ -2,7 +2,7 @@ pop-crypt
 =========
 
 [![Build Status](https://travis-ci.org/popphp/pop-crypt.svg?branch=master)](https://travis-ci.org/popphp/pop-crypt)
-[![Coverage Status](http://www.popphp.org/cc/coverage.php?comp=pop-crypt)](http://www.popphp.org/cc/pop-crypt/)
+[![Coverage Status](http://cc.popphp.org/coverage.php?comp=pop-crypt)](http://cc.popphp.org/pop-crypt/)
 
 OVERVIEW
 --------
@@ -31,7 +31,7 @@ BASIC USAGE
 ### Create and verify a hash with Crypt
 
 Using crypt is the simplest way to create an encrypted hash. It's best to use
-a strong, random salt for better security. 
+a strong, random salt for better security.
 
 ```php
 $crypt = new Pop\Crypt\Crypt();
@@ -129,7 +129,7 @@ $mcrypt = new Pop\Crypt\Mcrypt();
 
 You have several parameters that you can set with the Mcrypt class to help control the performance
 and security of the hashing. These values are set by default, or you can set them yourself:
- 
+
 ```php
 $mcrypt->setCipher(MCRYPT_RIJNDAEL_256)
        ->setMode(MCRYPT_MODE_CBC)
