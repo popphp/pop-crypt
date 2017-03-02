@@ -1,6 +1,10 @@
 pop-crypt
 =========
 
+END OF LIFE
+-----------
+The `pop-crypt` component v2.1.1 is now end-of-life and will no longer be maintained.
+
 [![Build Status](https://travis-ci.org/popphp/pop-crypt.svg?branch=master)](https://travis-ci.org/popphp/pop-crypt)
 [![Coverage Status](http://cc.popphp.org/coverage.php?comp=pop-crypt)](http://cc.popphp.org/pop-crypt/)
 
