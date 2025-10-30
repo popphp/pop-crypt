@@ -1,0 +1,63 @@
+<?php
+/**
+ * Pop PHP Framework (https://www.popphp.org/)
+ *
+ * @link       https://github.com/popphp/popphp-framework
+ * @author     Nick Sagona, III <dev@noladev.com>
+ * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @license    https://www.popphp.org/license     New BSD License
+ */
+
+/**
+ * @namespace
+ */
+namespace Pop\Crypt\Encryption;
+
+/**
+ * Pop Crypt encrypter
+ *
+ * @category   Pop
+ * @package    Pop\Crypt
+ * @author     Nick Sagona, III <dev@noladev.com>
+ * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @license    https://www.popphp.org/license     New BSD License
+ * @version    3.0.0
+ */
+class Encrypter extends AbstractEncrypter
+{
+
+    /**
+     * Available ciphers
+     *
+     * @var array
+     */
+    private static $ciphers = [
+        'aes-128-cbc' => ['size' => 16, 'aead' => false],
+        'aes-256-cbc' => ['size' => 32, 'aead' => false],
+        'aes-128-gcm' => ['size' => 16, 'aead' => true],
+        'aes-256-gcm' => ['size' => 32, 'aead' => true],
+    ];
+
+    /**
+     * Encrypt value
+     *
+     * @param  mixed $value
+     * @return mixed
+     */
+    public function encrypt(mixed $value): mixed
+    {
+        return null;
+    }
+
+    /**
+     * Decrypt value
+     *
+     * @param  mixed $value
+     * @return mixed
+     */
+    public function decrypt(mixed $value): mixed
+    {
+        return null;
+    }
+
+}
