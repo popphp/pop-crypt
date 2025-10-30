@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<phpunit bootstrap="vendor/autoload.php">
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" bootstrap="vendor/autoload.php" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd" cacheDirectory=".phpunit.cache">
+    <coverage>
+        <report>
+            <html outputDirectory="/tmp/pop-crypt-cc" lowUpperBound="35" highLowerBound="70"/>
+        </report>
+    </coverage>
     <testsuites>
         <testsuite name="Pop Crypt Component PHPUnit Test">
             <directory>tests</directory>
         </testsuite>
     </testsuites>
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
+    <logging/>
+    <source>
+        <include>
             <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
-    <logging>
-        <log type="coverage-html" target="/tmp/pop-crypt-cc" charset="UTF-8"
-             yui="true" highlight="false" showUncoveredFiles="true"
-             lowUpperBound="35" highLowerBound="70" />
-    </logging>
+        </include>
+    </source>
 </phpunit>
