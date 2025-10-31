@@ -39,25 +39,111 @@ class Encrypter extends AbstractEncrypter
     ];
 
     /**
+     * Create encrypter object
+     *
+     * @param  string $cipher
+     * @return static
+     */
+    public static function create(string $cipher = 'aes-256-cbc'): static
+    {
+        return new static(static::generateKey($cipher), $cipher);
+    }
+
+    /**
+     * Determine if the cipher is available
+     *
+     * @param  string $cipher
+     * @return bool
+     */
+    public static function isAvailable(string $cipher): bool
+    {
+        return isset(static::$ciphers[$cipher]);
+    }
+
+    /**
+     * Determine if the key and cipher combination is valid
+     *
+     * @param  string $key
+     * @param  string $cipher
+     * @return bool
+     */
+    public static function isValid(string $key, string $cipher): bool
+    {
+        $cipher = strtolower($cipher);
+        if (!isset(static::$ciphers[$cipher])) {
+            return false;
+        }
+        return (mb_strlen($key, '8bit') === static::$ciphers[$cipher]['size']);
+    }
+
+    /**
+     * Generate encryption key
+     *
+     * @param  string $cipher
+     * @return string
+     */
+    public static function generateKey(string $cipher): string
+    {
+        return random_bytes((static::$ciphers[strtolower($cipher)]['size'] ?? 32));
+    }
+
+    /**
      * Encrypt value
      *
      * @param  mixed $value
-     * @return mixed
+     * @return string
      */
-    public function encrypt(mixed $value): mixed
+    public function encrypt(#[\SensitiveParameter] mixed $value): string
     {
-        return null;
+        $iv    = openssl_random_pseudo_bytes(openssl_cipher_iv_length(strtolower($this->cipher)));
+        $tag   = '';
+        $value = openssl_encrypt($value, $this->cipher, $this->key, 0, $iv, $tag);
+        $iv    = base64_encode($iv);
+        $tag   = base64_encode($tag);
+        $mac   = (!static::$ciphers[$this->cipher]['aead']) ?
+            hash_hmac('sha256', $iv . $value, $this->key) : '';
+
+        $json = json_encode([
+            'iv'    => $iv,
+            'value' => $value,
+            'mac'   => $mac,
+            'tag'   => $tag,
+        ], JSON_UNESCAPED_SLASHES);
+
+        return base64_encode($json);
     }
 
     /**
      * Decrypt value
      *
-     * @param  mixed $value
+     * @param  string $payload
+     * @throws Exception
      * @return mixed
      */
-    public function decrypt(mixed $value): mixed
+    public function decrypt(string $payload): mixed
     {
-        return null;
+        $payload = json_decode(base64_decode($payload), true);
+
+        if (!is_array($payload) || (!isset($payload['iv']) || !isset($payload['value']))) {
+            throw new Exception('Error: The payload is not valid data.');
+        }
+
+        $iv        = base64_decode($payload['iv']);
+        $tag       = (!empty($payload['tag'])) ? base64_decode($payload['tag']) : '';
+        $decrypted = false;
+
+        foreach ($this->getAllKey() as $key) {
+            $decrypted = openssl_decrypt($payload['value'], $this->cipher, $key, 0, $iv, $tag);
+            if ($decrypted !== false) {
+                break;
+            }
+        }
+
+        if ($decrypted === false) {
+            throw new Exception('Error: Unable to decrypt the data.');
+        }
+
+        return $decrypted;
     }
 
 }

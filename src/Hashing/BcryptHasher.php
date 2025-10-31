@@ -42,6 +42,9 @@ class BcryptHasher extends AbstractHasher
      * Constructor
      *
      * Instantiate the Bcrypt object
+     *
+     * @param int     $cost
+     * @param ?string $salt
      */
     public function __construct(int $cost = 12, ?string $salt = null)
     {

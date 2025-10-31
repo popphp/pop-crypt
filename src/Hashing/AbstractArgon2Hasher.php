@@ -47,7 +47,11 @@ abstract class AbstractArgon2Hasher extends AbstractHasher
     /**
      * Constructor
      *
-     * Instantiate the Bcrypt object
+     * Instantiate the Argon2 object
+     *
+     * @param int $memoryCost
+     * @param int $timeCost
+     * @param int $threads
      */
     public function __construct(
         int $memoryCost = PASSWORD_ARGON2_DEFAULT_MEMORY_COST,
