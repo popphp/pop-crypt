@@ -55,7 +55,7 @@ interface HasherInterface
      *
      * @return static
      */
-    public static function createHasher(array $options = []): static;
+    public static function create(array $options = []): static;
 
     /**
      * Create hashed value
@@ -65,7 +65,7 @@ interface HasherInterface
      * @param  array           $options
      * @return string
      */
-    public function create(#[\SensitiveParameter] string $value, string|int|null $algorithm, array $options = []): string;
+    public function createHash(#[\SensitiveParameter] string $value, string|int|null $algorithm, array $options = []): string;
 
     /**
      * Get info from hashed value

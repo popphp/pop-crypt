@@ -55,7 +55,7 @@ abstract class AbstractHasher
      *
      * @return static
      */
-    public static function createHasher(array $options = []): static
+    public static function create(array $options = []): static
     {
         $hasher = new static();
         $hasher->setOptions($options);
@@ -70,7 +70,7 @@ abstract class AbstractHasher
      * @param  array           $options
      * @return string
      */
-    public function create(#[\SensitiveParameter] string $value, string|int|null $algorithm, array $options = []): string
+    public function createHash(#[\SensitiveParameter] string $value, string|int|null $algorithm, array $options = []): string
     {
         return password_hash($value, $algorithm, $options);
     }

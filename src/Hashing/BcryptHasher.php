@@ -130,7 +130,7 @@ class BcryptHasher extends AbstractHasher
         if ($this->hasSalt()) {
             $options['salt'] = $this->getSalt();
         }
-        return $this->create($value, PASSWORD_BCRYPT, $options);
+        return $this->createHash($value, PASSWORD_BCRYPT, $options);
     }
 
     /**

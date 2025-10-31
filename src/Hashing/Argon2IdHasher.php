@@ -39,7 +39,7 @@ class Argon2IdHasher extends AbstractArgon2Hasher
             'time_cost'   => $this->getTimeCost(),
             'threads'     => $this->getThreads(),
         ];
-        return $this->create($value, PASSWORD_ARGON2ID, $options);
+        return $this->createHash($value, PASSWORD_ARGON2ID, $options);
     }
 
     /**
