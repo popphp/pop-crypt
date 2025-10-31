@@ -135,4 +135,11 @@ In order to preserve legacy keys that have been previously used and rotated out 
 keys to have the encrypter object attempt to use them if the latest key does not work. This provides graceful rotation
 of keys.
 
+```php
+use Pop\Crypt\Encryption;
+
+$encrypter = new Encryption\Encrypter($currentKey, 'aes-256-cbc');
+$encrypter->setPreviousKeys([$oldKey1, $oldKey2, $oldKey3]);
+```
+
 [Top](#pop-crypt)
