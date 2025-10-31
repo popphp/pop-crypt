@@ -57,7 +57,7 @@ Create an encrypted value:
 ```php
 use Pop\Crypt\Encryption;
 
-$encrypter = new Encryption\Encrypter('SOME_SECURE_KEY', 'aes-256-cbc');
+$encrypter = new Encryption\Encrypter($mySecureKey, 'aes-256-cbc');
  // Returns a base-64 encoded string of the encrypted data
 $encryptedData = $encrypter->encrypt('SENSITIVE_DATA');
 
