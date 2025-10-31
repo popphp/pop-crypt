@@ -58,7 +58,7 @@ Create an encrypted value:
 use Pop\Crypt\Encryption;
 
 $encrypter = new Encryption\Encrypter($mySecureKey, 'aes-256-cbc');
- // Returns a base-64 encoded string of the encrypted data
+// Returns a base-64 encoded string of the encrypted data
 $encryptedData = $encrypter->encrypt('SENSITIVE_DATA');
 
 // Returns the valid, decrypted data
@@ -96,7 +96,7 @@ All the algorithms use the standard default values for the options if none are p
 Encryption
 ----------
 
-The Encryption classes are built using the `openssl` extensions and its related functions. Supported ciphers are:
+The Encryption classes are built using the `openssl` extension and its related functions. Supported ciphers are:
 
 - `aes-128-cbc`
 - `aes-256-cbc`
