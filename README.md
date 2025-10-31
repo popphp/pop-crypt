@@ -57,13 +57,16 @@ Create an encrypted value:
 ```php
 use Pop\Crypt\Encryption;
 
-$encrypter     = new Encryption\Encrypter('SOME_SECURE_KEY', 'aes-256-cbc');
-$encryptedData = $encrypter->encrypt('SENSITIVE_DATA'); // Returns a base-64 encoded string of the encrypted data
+$encrypter = new Encryption\Encrypter('SOME_SECURE_KEY', 'aes-256-cbc');
+ // Returns a base-64 encoded string of the encrypted data
+$encryptedData = $encrypter->encrypt('SENSITIVE_DATA');
 
+// Returns the valid, decrypted data
 try {
-    $decryptedData = $encrypter->decrypt($encryptedData); // Returns the valid, decrypted data
+    $decryptedData = $encrypter->decrypt($encryptedData);
+// Else, throws an error exception is something is incorrect or invalid
 } catch (\Exception $e) {
-    echo $e->getMessage(); // Else, throws an error exception is something is incorrect or invalid
+    echo $e->getMessage(); 
 }
 ```
 
