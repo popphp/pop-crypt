@@ -143,13 +143,17 @@ abstract class AbstractEncrypter
      * Set previous keys
      *
      * @param  array $previousKeys
+     * @param  bool  $raw
      * @throws Exception
      * @return static
      */
-    public function setPreviousKeys(array $previousKeys): static
+    public function setPreviousKeys(array $previousKeys, bool $raw = true): static
     {
         if (!empty($this->cipher)) {
             foreach ($previousKeys as $previousKey) {
+                if (!$raw) {
+                    $previousKey = base64_decode($previousKey);
+                }
                 if (!static::isValid($previousKey, $this->cipher)) {
                     throw new Exception('Error: Invalid key or unsupported cipher.');
                 }
@@ -164,11 +168,18 @@ abstract class AbstractEncrypter
     /**
      * Get previous keys
      *
+     * @param  bool $raw
      * @return array
      */
-    public function getPreviousKeys(): array
+    public function getPreviousKeys(bool $raw = false): array
     {
-        return $this->previousKeys;
+        if (!$raw) {
+            return array_map(function ($value) {
+                return base64_encode($value);
+            }, $this->previousKeys);
+        } else {
+            return $this->previousKeys;
+        }
     }
 
     /**

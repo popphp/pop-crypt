@@ -105,7 +105,7 @@ class Encrypter extends AbstractEncrypter
         $tag   = '';
         $value = openssl_encrypt($value, $this->cipher, $this->key, 0, $iv, $tag);
         $iv    = base64_encode($iv);
-        $tag   = base64_encode($tag);
+        $tag   = base64_encode(($tag ?? ''));
         $mac   = (!static::$ciphers[$this->cipher]['aead']) ?
             hash_hmac('sha256', $iv . $value, $this->key) : '';
 

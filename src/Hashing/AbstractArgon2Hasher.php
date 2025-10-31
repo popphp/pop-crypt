@@ -30,19 +30,19 @@ abstract class AbstractArgon2Hasher extends AbstractHasher
      * Memory cost
      * @var int
      */
-    protected int $memoryCost = PASSWORD_ARGON2_DEFAULT_MEMORY_COST;
+    protected int $memoryCost = PASSWORD_ARGON2_DEFAULT_MEMORY_COST; // 65536
 
     /**
      * Time cost
      * @var int
      */
-    protected int $timeCost = PASSWORD_ARGON2_DEFAULT_TIME_COST;
+    protected int $timeCost = PASSWORD_ARGON2_DEFAULT_TIME_COST; // 4
 
     /**
      * Threads
      * @var int
      */
-    protected int $threads = PASSWORD_ARGON2_DEFAULT_THREADS;
+    protected int $threads = PASSWORD_ARGON2_DEFAULT_THREADS; // 1
 
     /**
      * Constructor

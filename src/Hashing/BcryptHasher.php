@@ -27,12 +27,6 @@ class BcryptHasher extends AbstractHasher
 {
 
     /**
-     * Salt
-     * @var ?string
-     */
-    protected ?string $salt = null;
-
-    /**
      * Cost
      * @var int
      */
@@ -46,44 +40,9 @@ class BcryptHasher extends AbstractHasher
      * @param int     $cost
      * @param ?string $salt
      */
-    public function __construct(int $cost = 12, ?string $salt = null)
+    public function __construct(int $cost = 12)
     {
         $this->setCost($cost);
-        if ($salt !== null) {
-            $this->setSalt($salt);
-        }
-    }
-
-    /**
-     * Set salt
-     *
-     * @param  string $salt
-     * @return BcryptHasher
-     */
-    public function setSalt(string $salt): BcryptHasher
-    {
-        $this->salt = $salt;
-        return $this;
-    }
-
-    /**
-     * Get salt
-     *
-     * @return ?string
-     */
-    public function getSalt(): ?string
-    {
-        return $this->salt;
-    }
-
-    /**
-     * Has salt
-     *
-     * @return bool
-     */
-    public function hasSalt(): bool
-    {
-        return !empty($this->salt);
     }
 
     /**
@@ -126,11 +85,7 @@ class BcryptHasher extends AbstractHasher
      */
     public function make(#[\SensitiveParameter] string $value): string
     {
-        $options = ['cost' => $this->getCost()];
-        if ($this->hasSalt()) {
-            $options['salt'] = $this->getSalt();
-        }
-        return $this->createHash($value, PASSWORD_BCRYPT, $options);
+        return $this->createHash($value, PASSWORD_BCRYPT,  ['cost' => $this->getCost()]);
     }
 
     /**
@@ -141,11 +96,7 @@ class BcryptHasher extends AbstractHasher
      */
     public function requiresRehash(string $hashedValue): bool
     {
-        $options = ['cost' => $this->getCost()];
-        if ($this->hasSalt()) {
-            $options['salt'] = $this->getSalt();
-        }
-        return $this->needsRehash($hashedValue, PASSWORD_BCRYPT, $options);
+        return $this->needsRehash($hashedValue, PASSWORD_BCRYPT, ['cost' => $this->getCost()]);
     }
 
     /**
@@ -158,9 +109,6 @@ class BcryptHasher extends AbstractHasher
     {
         if (isset($options['cost'])) {
             $this->setCost($options['cost']);
-        }
-        if (isset($options['salt'])) {
-            $this->setSalt($options['salt']);
         }
         return $this;
     }
