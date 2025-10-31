@@ -51,14 +51,15 @@ abstract class AbstractEncrypter
      *
      * @param  string $key
      * @param  string $cipher
+     * @param  bool   $raw
      * @throws Exception
      */
-    public function __construct(string $key, string $cipher = 'aes-256-cbc')
+    public function __construct(string $key, string $cipher = 'aes-256-cbc', bool $raw = true)
     {
-        if (!static::isValid($key, $cipher)) {
+        if (!static::isValid($key, $cipher, $raw)) {
             throw new Exception('Error: Invalid key or unsupported cipher.');
         }
-        $this->setKey($key);
+        $this->setKey($key, $raw);
         $this->setCipher($cipher);
     }
 
@@ -98,22 +99,24 @@ abstract class AbstractEncrypter
      * Set key
      *
      * @param  string $key
+     * @param  bool   $raw
      * @return static
      */
-    public function setKey(string $key): static
+    public function setKey(string $key, bool $raw = true): static
     {
-        $this->key = $key;
+        $this->key = ($raw) ? $key : base64_decode($key);
         return $this;
     }
 
     /**
      * Get key
      *
+     * @param  bool $raw
      * @return string
      */
-    public function getKey(): string
+    public function getKey(bool $raw = false): string
     {
-        return $this->key;
+        return ($raw) ? $this->key : base64_encode($this->key);
     }
 
     /**
@@ -191,9 +194,10 @@ abstract class AbstractEncrypter
      *
      * @param  string $key
      * @param  string $cipher
+     * @param  bool   $raw
      * @return bool
      */
-    abstract public static function isValid(string $key, string $cipher): bool;
+    abstract public static function isValid(string $key, string $cipher, bool $raw = true): bool;
 
     /**
      * Encrypt value

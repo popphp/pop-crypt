@@ -57,7 +57,7 @@ class Encrypter extends AbstractEncrypter
      */
     public static function isAvailable(string $cipher): bool
     {
-        return isset(static::$ciphers[$cipher]);
+        return isset(static::$ciphers[strtolower($cipher)]);
     }
 
     /**
@@ -65,13 +65,17 @@ class Encrypter extends AbstractEncrypter
      *
      * @param  string $key
      * @param  string $cipher
+     * @param  bool   $raw
      * @return bool
      */
-    public static function isValid(string $key, string $cipher): bool
+    public static function isValid(string $key, string $cipher, bool $raw = true): bool
     {
         $cipher = strtolower($cipher);
         if (!isset(static::$ciphers[$cipher])) {
             return false;
+        }
+        if (!$raw) {
+            $key = base64_decode($key);
         }
         return (mb_strlen($key, '8bit') === static::$ciphers[$cipher]['size']);
     }
@@ -80,11 +84,13 @@ class Encrypter extends AbstractEncrypter
      * Generate encryption key
      *
      * @param  string $cipher
+     * @param  bool   $raw
      * @return string
      */
-    public static function generateKey(string $cipher): string
+    public static function generateKey(string $cipher, bool $raw = true): string
     {
-        return random_bytes((static::$ciphers[strtolower($cipher)]['size'] ?? 32));
+        $key = random_bytes((static::$ciphers[strtolower($cipher)]['size'] ?? 32));
+        return ($raw) ? $key : base64_encode($key);
     }
 
     /**
@@ -131,14 +137,23 @@ class Encrypter extends AbstractEncrypter
         $iv        = base64_decode($payload['iv']);
         $tag       = (!empty($payload['tag'])) ? base64_decode($payload['tag']) : '';
         $decrypted = false;
+        $validMac  = null;
 
-        foreach ($this->getAllKey() as $key) {
+        foreach ($this->getAllKeys() as $key) {
             $decrypted = openssl_decrypt($payload['value'], $this->cipher, $key, 0, $iv, $tag);
+
+            if (!static::$ciphers[$this->cipher]['aead']) {
+                $validMac = hash_equals(hash_hmac('sha256', $payload['iv'] . $payload['value'], $key), $payload['mac']);
+            }
+
             if ($decrypted !== false) {
                 break;
             }
         }
 
+        if ($validMac === false) {
+            throw new Exception('Error: Invalid MAC value.');
+        }
         if ($decrypted === false) {
             throw new Exception('Error: Unable to decrypt the data.');
         }

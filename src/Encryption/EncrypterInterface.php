@@ -52,16 +52,18 @@ interface EncrypterInterface
      * Set key
      *
      * @param  string $key
+     * @param  bool   $raw
      * @return static
      */
-    public function setKey(string $key): static;
+    public function setKey(string $key, bool $raw = true): static;
 
     /**
      * Get key
      *
+     * @param  bool $raw
      * @return string
      */
-    public function getKey(): string;
+    public function getKey(bool $raw = false): string;
 
     /**
      * Has key
