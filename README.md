@@ -107,6 +107,28 @@ It is important to safely store the key or keys used to generate the encrypted d
 their cipher, the encrypted data can successfully be decrypted. However, if the key is incorrect or matched with
 the wrong cipher, decryption will fail
 
+### Generate Key
+
+A key that matches the chosen cipher can be generated with the following method:
+
+```php
+use Pop\Crypt\Encryption;
+
+$key = Encryption\Encrypter::generateKey($cipher, false);
+```
+
+##### Raw vs Base-64
+
+Methods the manage the key values have an optional `$raw` parameter.
+
+In the case of generating or getting key values from the encrypter, if `$raw` is true, then the key value will be
+returned as a raw string of bytes. Otherwise, if `$raw` is false, the key value will be base-64 encoded before it
+is returned.
+
+In the case of setting key values or previous key values in the encrypter, if `$raw` is false, then the key values will
+be treated was base-64 encoded values and will be decoded as they are stored in the object. If `$raw` is true, the
+key values will not be processed or decoded in any way.
+
 ### Previous Keys
 
 In order to preserve legacy keys that have been previously used and rotated out of use, you can load those previous
