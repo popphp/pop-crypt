@@ -105,7 +105,7 @@ The Encryption classes are built using the `openssl` extension and its related f
 
 It is important to safely store the key or keys used to generate the encrypted data. When correctly paired with
 their cipher, the encrypted data can successfully be decrypted. However, if the key is incorrect or matched with
-the wrong cipher, decryption will fail
+the wrong cipher, decryption will fail.
 
 ### Generate Key
 
@@ -119,7 +119,7 @@ $key = Encryption\Encrypter::generateKey($cipher, false);
 
 ##### Raw vs Base-64
 
-Methods the manage the key values have an optional `$raw` parameter.
+Methods that manage the key values have an optional `$raw` parameter.
 
 In the case of generating or getting key values from the encrypter, if `$raw` is true, then the key value will be
 returned as a raw string of bytes. Otherwise, if `$raw` is false, the key value will be base-64 encoded before it
