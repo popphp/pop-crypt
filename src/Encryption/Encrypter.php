@@ -101,7 +101,7 @@ class Encrypter extends AbstractEncrypter
      */
     public function encrypt(#[\SensitiveParameter] mixed $value): string
     {
-        $iv    = openssl_random_pseudo_bytes(openssl_cipher_iv_length(strtolower($this->cipher)));
+        $iv    = random_bytes(openssl_cipher_iv_length(strtolower($this->cipher)));
         $tag   = '';
         $value = openssl_encrypt($value, $this->cipher, $this->key, 0, $iv, $tag);
         $iv    = base64_encode($iv);
