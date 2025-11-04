@@ -150,17 +150,16 @@ abstract class AbstractEncrypter
     public function setPreviousKeys(array $previousKeys, bool $raw = true): static
     {
         if (!empty($this->cipher)) {
-            foreach ($previousKeys as $previousKey) {
+            foreach ($previousKeys as $i => $previousKey) {
                 if (!$raw) {
                     $previousKey = base64_decode($previousKey);
                 }
                 if (!static::isValid($previousKey, $this->cipher)) {
                     throw new Exception('Error: Invalid key or unsupported cipher.');
                 }
+                $this->previousKeys[] = $previousKey;
             }
         }
-
-        $this->previousKeys = $previousKeys;
 
         return $this;
     }
