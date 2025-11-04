@@ -63,4 +63,21 @@ class HasherTest extends TestCase
         $this->assertEquals(2, $hasher->getThreads());
     }
 
+    public function testFactory()
+    {
+        $bcryptHasher   = Hashing\Hasher::create(PASSWORD_BCRYPT, ['cost' => 14]);
+        $argon2IHasher  = Hashing\Hasher::create(PASSWORD_ARGON2I, ['time_cost' => PASSWORD_ARGON2_DEFAULT_TIME_COST]);
+        $argon2IdHasher = Hashing\Hasher::create(PASSWORD_ARGON2ID, ['time_cost' => PASSWORD_ARGON2_DEFAULT_TIME_COST]);
+
+        $this->assertInstanceOf(Hashing\BcryptHasher::class, $bcryptHasher);
+        $this->assertInstanceOf(Hashing\Argon2IHasher::class, $argon2IHasher);
+        $this->assertInstanceOf(Hashing\Argon2IdHasher::class, $argon2IdHasher);
+    }
+
+    public function testFactoryException()
+    {
+        $this->expectException('Pop\Crypt\Hashing\Exception');
+        $hasher = Hashing\Hasher::create('bad_algo');
+    }
+
 }
