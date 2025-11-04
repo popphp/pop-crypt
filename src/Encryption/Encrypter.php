@@ -26,6 +26,15 @@ namespace Pop\Crypt\Encryption;
 class Encrypter extends AbstractEncrypter
 {
 
+
+    /**
+     * Cipher constants
+     */
+    const AES_128_CBC = 'aes-128-cbc';
+    const AES_256_CBC = 'aes-256-cbc';
+    const AES_128_GCM = 'aes-128-gcm';
+    const AES_256_GCM = 'aes-256-gcm';
+
     /**
      * Available ciphers
      *
