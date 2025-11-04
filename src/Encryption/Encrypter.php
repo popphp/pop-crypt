@@ -26,7 +26,6 @@ namespace Pop\Crypt\Encryption;
 class Encrypter extends AbstractEncrypter
 {
 
-
     /**
      * Cipher constants
      */
