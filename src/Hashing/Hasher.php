@@ -21,7 +21,7 @@ namespace Pop\Crypt\Hashing;
  * @author     Nick Sagona, III <dev@noladev.com>
  * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
- * @version    3.0.1
+ * @version    3.0.0
  */
 class Hasher
 {
