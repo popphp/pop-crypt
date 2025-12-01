@@ -50,11 +50,48 @@ class Encrypter extends AbstractEncrypter
      * Create encrypter object
      *
      * @param  string $cipher
+     * @param  bool   $raw
      * @return static
      */
-    public static function create(string $cipher = 'aes-256-cbc'): static
+    public static function create(string $cipher = 'aes-256-cbc', bool $raw = true): static
     {
-        return new static(static::generateKey($cipher), $cipher);
+        return new static(static::generateKey($cipher), $cipher, $raw);
+    }
+
+    /**
+     * Load encrypter object from $_ENV
+     *
+     * @param  bool $raw
+     * @throws Exception
+     * @return static
+     */
+    public static function load(bool $raw = true): static
+    {
+        $cipher       = null;
+        $key          = null;
+        $previousKeys = null;
+
+        if (!empty($_ENV['APP_CIPHER_METHOD'])) {
+            $cipher = trim($_ENV['APP_CIPHER_METHOD']);
+        }
+        if (empty($key) && !empty($_ENV['APP_KEY'])) {
+            $key = trim($_ENV['APP_KEY']);
+        }
+        if (!empty($_ENV['APP_PREVIOUS_KEYS'])) {
+            $previousKeys = array_map('trim', explode(',', $_ENV['APP_PREVIOUS_KEYS']));
+        }
+
+        if (empty($cipher) || empty($key)) {
+            throw new Exception('Error: The encryption properties could not be loaded.');
+        }
+
+        $encrypter = new static($key, $cipher, $raw);
+
+        if (!empty($previousKeys)) {
+            $encrypter->setPreviousKeys($previousKeys, $raw);
+        }
+
+        return $encrypter;
     }
 
     /**
