@@ -4,7 +4,7 @@
  *
  * @link       https://github.com/popphp/popphp-framework
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
  */
 
@@ -19,9 +19,9 @@ namespace Pop\Crypt\Encryption;
  * @category   Pop
  * @package    Pop\Crypt
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
- * @version    3.0.0
+ * @version    4.0.0
  */
 interface EncrypterInterface
 {
@@ -122,17 +122,17 @@ interface EncrypterInterface
     /**
      * Encrypt value
      *
-     * @param  mixed $value
+     * @param  string $value
      * @return string
      */
-    public function encrypt(mixed $value): string;
+    public function encrypt(string $value): string;
 
     /**
      * Decrypt value
      *
-     * @param  mixed $payload
-     * @return mixed
+     * @param  string $payload
+     * @return string
      */
-    public function decrypt(mixed $payload): mixed;
+    public function decrypt(string $payload): string;
 
 }

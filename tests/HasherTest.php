@@ -52,7 +52,7 @@ class HasherTest extends TestCase
         $hash   = $hasher->make('password');
         $this->assertTrue($hasher->verify('password', $hash));
         $this->assertFalse($hasher->verify('bad', $hash));
-        $this->assertTrue($hasher->requiresRehash($hash));
+        $this->assertFalse($hasher->requiresRehash($hash));
         $this->assertIsArray($hasher->getAlgorithms());
         $this->assertIsArray($hasher->getInfo($hash));
         $this->assertTrue($hasher->hasMemoryCost());
@@ -78,6 +78,28 @@ class HasherTest extends TestCase
     {
         $this->expectException('Pop\Crypt\Hashing\Exception');
         $hasher = Hashing\Hasher::create('bad_algo');
+    }
+
+    public function testMakeRejectsValueOverMaxLength()
+    {
+        $this->expectException('Pop\Crypt\Hashing\Exception');
+        $hasher = Hashing\BcryptHasher::create();
+        $hasher->make(str_repeat('a', Hashing\AbstractHasher::MAX_VALUE_LENGTH + 1));
+    }
+
+    public function testVerifyRejectsValueOverMaxLength()
+    {
+        $this->expectException('Pop\Crypt\Hashing\Exception');
+        $hasher = Hashing\BcryptHasher::create();
+        $hasher->verify(str_repeat('a', Hashing\AbstractHasher::MAX_VALUE_LENGTH + 1), 'irrelevant-hash');
+    }
+
+    public function testMakeAllowsValueAtMaxLength()
+    {
+        $hasher = Hashing\BcryptHasher::create();
+        $value  = str_repeat('a', Hashing\AbstractHasher::MAX_VALUE_LENGTH);
+        $hash   = $hasher->make($value);
+        $this->assertTrue($hasher->verify($value, $hash));
     }
 
 }

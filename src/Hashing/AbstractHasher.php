@@ -4,7 +4,7 @@
  *
  * @link       https://github.com/popphp/popphp-framework
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
  */
 
@@ -19,12 +19,21 @@ namespace Pop\Crypt\Hashing;
  * @category   Pop
  * @package    Pop\Crypt
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
- * @version    3.0.0
+ * @version    4.0.0
  */
 abstract class AbstractHasher
 {
+
+    /**
+     * Maximum allowed length, in bytes, for a value passed to createHash() or verify().
+     *
+     * Argon2's cost scales with input size, so without a cap an attacker-controlled
+     * value of unbounded length becomes an algorithmic-complexity denial-of-service
+     * vector. 4096 matches the limit used by Symfony's password hasher.
+     */
+    const MAX_VALUE_LENGTH = 4096;
 
     /**
      * Make hashed value (based on the hasher class)
@@ -68,10 +77,14 @@ abstract class AbstractHasher
      * @param  string          $value
      * @param  string|int|null $algorithm
      * @param  array           $options
+     * @throws Exception
      * @return string
      */
     public function createHash(#[\SensitiveParameter] string $value, string|int|null $algorithm, array $options = []): string
     {
+        if (strlen($value) > static::MAX_VALUE_LENGTH) {
+            throw new Exception('Error: The value exceeds the maximum allowed length of ' . static::MAX_VALUE_LENGTH . ' bytes.');
+        }
         return password_hash($value, $algorithm, $options);
     }
 
@@ -114,10 +127,14 @@ abstract class AbstractHasher
      *
      * @param  string $value
      * @param  string $hashedValue
+     * @throws Exception
      * @return bool
      */
     public function verify(#[\SensitiveParameter] string $value, string $hashedValue): bool
     {
+        if (strlen($value) > static::MAX_VALUE_LENGTH) {
+            throw new Exception('Error: The value exceeds the maximum allowed length of ' . static::MAX_VALUE_LENGTH . ' bytes.');
+        }
         return password_verify($value, $hashedValue);
     }
 

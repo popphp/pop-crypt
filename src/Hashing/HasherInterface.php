@@ -4,7 +4,7 @@
  *
  * @link       https://github.com/popphp/popphp-framework
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
  */
 
@@ -19,9 +19,9 @@ namespace Pop\Crypt\Hashing;
  * @category   Pop
  * @package    Pop\Crypt
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
- * @version    3.0.0
+ * @version    4.0.0
  */
 interface HasherInterface
 {
@@ -63,6 +63,7 @@ interface HasherInterface
      * @param  string          $value
      * @param  string|int|null $algorithm
      * @param  array           $options
+     * @throws Exception
      * @return string
      */
     public function createHash(#[\SensitiveParameter] string $value, string|int|null $algorithm, array $options = []): string;
@@ -97,6 +98,7 @@ interface HasherInterface
      *
      * @param  string $value
      * @param  string $hashedValue
+     * @throws Exception
      * @return bool
      */
     public function verify(#[\SensitiveParameter] string $value, string $hashedValue): bool;

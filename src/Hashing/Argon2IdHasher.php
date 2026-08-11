@@ -4,7 +4,7 @@
  *
  * @link       https://github.com/popphp/popphp-framework
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
  */
 
@@ -19,9 +19,9 @@ namespace Pop\Crypt\Hashing;
  * @category   Pop
  * @package    Pop\Crypt
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
- * @version    3.0.0
+ * @version    4.0.0
  */
 class Argon2IdHasher extends AbstractArgon2Hasher
 {
@@ -55,7 +55,7 @@ class Argon2IdHasher extends AbstractArgon2Hasher
             'time_cost'   => $this->getTimeCost(),
             'threads'     => $this->getThreads(),
         ];
-        return $this->needsRehash($hashedValue, PASSWORD_ARGON2I, $options);
+        return $this->needsRehash($hashedValue, PASSWORD_ARGON2ID, $options);
     }
 
 }

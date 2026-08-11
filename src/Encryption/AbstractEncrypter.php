@@ -4,7 +4,7 @@
  *
  * @link       https://github.com/popphp/popphp-framework
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
  */
 
@@ -19,11 +19,11 @@ namespace Pop\Crypt\Encryption;
  * @category   Pop
  * @package    Pop\Crypt
  * @author     Nick Sagona, III <dev@noladev.com>
- * @copyright  Copyright (c) 2009-2026 NOLA Interactive, LLC.
+ * @copyright  Copyright (c) 2009-2027 NOLA Interactive, LLC.
  * @license    https://www.popphp.org/license     New BSD License
- * @version    3.0.0
+ * @version    4.0.0
  */
-abstract class AbstractEncrypter
+abstract class AbstractEncrypter implements EncrypterInterface
 {
 
     /**
@@ -59,19 +59,29 @@ abstract class AbstractEncrypter
         if (!static::isValid($key, $cipher, $raw)) {
             throw new Exception('Error: Invalid key or unsupported cipher.');
         }
-        $this->setKey($key, $raw);
         $this->setCipher($cipher);
+        $this->setKey($key, $raw);
     }
 
     /**
      * Set cipher
      *
      * @param  string $cipher
+     * @throws Exception
      * @return static
      */
     public function setCipher(string $cipher): static
     {
-        $this->cipher = strtolower($cipher);
+        $cipher = strtolower($cipher);
+
+        if (!static::isAvailable($cipher)) {
+            throw new Exception('Error: Invalid or unsupported cipher.');
+        }
+        if ($this->hasKey() && !static::isValid($this->key, $cipher)) {
+            throw new Exception('Error: Invalid key or unsupported cipher.');
+        }
+
+        $this->cipher = $cipher;
         return $this;
     }
 
@@ -100,11 +110,18 @@ abstract class AbstractEncrypter
      *
      * @param  string $key
      * @param  bool   $raw
+     * @throws Exception
      * @return static
      */
     public function setKey(string $key, bool $raw = true): static
     {
-        $this->key = ($raw) ? $key : base64_decode($key);
+        $key = ($raw) ? $key : base64_decode($key);
+
+        if (!empty($this->cipher) && !static::isValid($key, $this->cipher)) {
+            throw new Exception('Error: Invalid key or unsupported cipher.');
+        }
+
+        $this->key = $key;
         return $this;
     }
 
@@ -212,17 +229,17 @@ abstract class AbstractEncrypter
     /**
      * Encrypt value
      *
-     * @param  mixed $value
+     * @param  string $value
      * @return string
      */
-    abstract public function encrypt(#[\SensitiveParameter] mixed $value): string;
+    abstract public function encrypt(#[\SensitiveParameter] string $value): string;
 
     /**
      * Decrypt value
      *
      * @param  string $payload
-     * @return mixed
+     * @return string
      */
-    abstract public function decrypt(string $payload): mixed;
+    abstract public function decrypt(string $payload): string;
 
 }

@@ -106,4 +106,200 @@ class EncrypterTest extends TestCase
         $decrypted = $encrypter->decrypt(base64_encode(json_encode($enc)));
     }
 
+    public function testDecryptDoesNotSkipValidPreviousKeyOnCoincidentalPadding()
+    {
+        $realEncrypter = Encryption\Encrypter::create('aes-256-cbc');
+        $realKey       = $realEncrypter->getKey(true);
+        $encrypted     = $realEncrypter->encrypt('secret payload');
+
+        $payload     = json_decode(base64_decode($encrypted), true);
+        $iv          = base64_decode($payload['iv']);
+        $cipherValue = $payload['value'];
+
+        // Find a "decoy" key that, purely by chance, produces syntactically valid
+        // (non-false) CBC/PKCS7 decryption of this ciphertext but is not the real
+        // key (so its MAC will never match). This reproduces the scenario where
+        // decrypt() must not stop trying keys just because openssl_decrypt()
+        // returned something.
+        $decoyKey = null;
+        for ($i = 0; $i < 20000; $i++) {
+            $candidate = random_bytes(32);
+            if (openssl_decrypt($cipherValue, 'aes-256-cbc', $candidate, 0, $iv) !== false) {
+                $decoyKey = $candidate;
+                break;
+            }
+        }
+        $this->assertNotNull($decoyKey, 'Could not find a decoy key with coincidentally valid padding.');
+
+        $rotatedEncrypter = new Encryption\Encrypter($decoyKey, 'aes-256-cbc');
+        $rotatedEncrypter->setPreviousKeys([$realKey]);
+
+        $decrypted = $rotatedEncrypter->decrypt($encrypted);
+        $this->assertEquals('secret payload', $decrypted);
+    }
+
+    public function testSetCipherWithInvalidCipherThrowsException()
+    {
+        $this->expectException('Pop\Crypt\Encryption\Exception');
+        $encrypter = Encryption\Encrypter::create();
+        $encrypter->setCipher('aes-256-bad');
+    }
+
+    public function testSetCipherIncompatibleWithExistingKeyThrowsException()
+    {
+        $this->expectException('Pop\Crypt\Encryption\Exception');
+        $encrypter = Encryption\Encrypter::create('aes-256-cbc');
+        $encrypter->setCipher('aes-128-cbc');
+    }
+
+    public function testSetKeyWithWrongSizeForCipherThrowsException()
+    {
+        $this->expectException('Pop\Crypt\Encryption\Exception');
+        $encrypter = Encryption\Encrypter::create('aes-256-cbc');
+        $encrypter->setKey(random_bytes(16));
+    }
+
+    public function testEncryptRejectsNonStringValue()
+    {
+        $this->expectException(\TypeError::class);
+        $encrypter = Encryption\Encrypter::create();
+        $encrypter->encrypt(['not' => 'a string']);
+    }
+
+    public function testLoadDefaultsToBase64EncodedEnvKey()
+    {
+        $cipher = 'aes-256-cbc';
+        $key    = Encryption\Encrypter::generateKey($cipher, false);
+
+        $_ENV['APP_CIPHER_METHOD'] = $cipher;
+        $_ENV['APP_KEY']           = $key;
+
+        try {
+            $encrypter = Encryption\Encrypter::load();
+            $encrypted = $encrypter->encrypt('load test');
+            $this->assertEquals('load test', $encrypter->decrypt($encrypted));
+            $this->assertEquals($cipher, $encrypter->getCipher());
+        } finally {
+            unset($_ENV['APP_CIPHER_METHOD'], $_ENV['APP_KEY']);
+        }
+    }
+
+    public function testLoadWithPreviousKeysFromEnv()
+    {
+        $cipher    = 'aes-256-cbc';
+        $oldKey    = Encryption\Encrypter::generateKey($cipher, false);
+        $oldEnc    = new Encryption\Encrypter($oldKey, $cipher, false);
+        $encrypted = $oldEnc->encrypt('rotated payload');
+        $newKey    = Encryption\Encrypter::generateKey($cipher, false);
+
+        $_ENV['APP_CIPHER_METHOD'] = $cipher;
+        $_ENV['APP_KEY']           = $newKey;
+        $_ENV['APP_PREVIOUS_KEYS'] = $oldKey;
+
+        try {
+            $encrypter = Encryption\Encrypter::load();
+            $this->assertTrue($encrypter->hasPreviousKeys());
+            $this->assertEquals('rotated payload', $encrypter->decrypt($encrypted));
+        } finally {
+            unset($_ENV['APP_CIPHER_METHOD'], $_ENV['APP_KEY'], $_ENV['APP_PREVIOUS_KEYS']);
+        }
+    }
+
+    public function testLoadThrowsExceptionWhenEnvIsMissing()
+    {
+        unset($_ENV['APP_CIPHER_METHOD'], $_ENV['APP_KEY'], $_ENV['APP_PREVIOUS_KEYS']);
+        $this->expectException('Pop\Crypt\Encryption\Exception');
+        Encryption\Encrypter::load();
+    }
+
+    public function testCbcMacIsNotComputedWithRawMasterKey()
+    {
+        $encrypter = Encryption\Encrypter::create('aes-256-cbc');
+        $rawKey    = $encrypter->getKey(true);
+        $encrypted = $encrypter->encrypt('password');
+
+        $payload   = json_decode(base64_decode($encrypted), true);
+        $rawKeyMac = hash_hmac('sha256', $payload['iv'] . $payload['value'], $rawKey);
+
+        $this->assertNotEquals($rawKeyMac, $payload['mac']);
+    }
+
+    public function testEncrypterImplementsEncrypterInterface()
+    {
+        $encrypter = Encryption\Encrypter::create();
+        $this->assertInstanceOf(Encryption\EncrypterInterface::class, $encrypter);
+    }
+
+    public function testDecryptThrowsExceptionForNonStringIv()
+    {
+        $this->expectException(Encryption\Exception::class);
+        $encrypter = Encryption\Encrypter::create();
+        $encrypted = $encrypter->encrypt('password');
+
+        $enc = json_decode(base64_decode($encrypted), true);
+        $enc['iv'] = ['a'];
+        $decrypted = $encrypter->decrypt(base64_encode(json_encode($enc)));
+    }
+
+    public function testDecryptThrowsExceptionForNonStringValue()
+    {
+        $this->expectException(Encryption\Exception::class);
+        $encrypter = Encryption\Encrypter::create();
+        $encrypted = $encrypter->encrypt('password');
+
+        $enc = json_decode(base64_decode($encrypted), true);
+        $enc['value'] = ['x'];
+        $decrypted = $encrypter->decrypt(base64_encode(json_encode($enc)));
+    }
+
+    public function testDecryptThrowsExceptionForMissingMac()
+    {
+        $this->expectException(Encryption\Exception::class);
+        $encrypter = Encryption\Encrypter::create('aes-256-cbc');
+        $encrypted = $encrypter->encrypt('password');
+
+        $enc = json_decode(base64_decode($encrypted), true);
+        unset($enc['mac']);
+        $decrypted = $encrypter->decrypt(base64_encode(json_encode($enc)));
+    }
+
+    public function testDecryptThrowsExceptionForNonStringMac()
+    {
+        $this->expectException(Encryption\Exception::class);
+        $encrypter = Encryption\Encrypter::create('aes-256-cbc');
+        $encrypted = $encrypter->encrypt('password');
+
+        $enc = json_decode(base64_decode($encrypted), true);
+        $enc['mac'] = ['q'];
+        $decrypted = $encrypter->decrypt(base64_encode(json_encode($enc)));
+    }
+
+    public function testDecryptThrowsExceptionForNonStringTag()
+    {
+        $this->expectException(Encryption\Exception::class);
+        $encrypter = Encryption\Encrypter::create('aes-256-gcm');
+        $encrypted = $encrypter->encrypt('password');
+
+        $enc = json_decode(base64_decode($encrypted), true);
+        $enc['tag'] = ['z'];
+        $decrypted = $encrypter->decrypt(base64_encode(json_encode($enc)));
+    }
+
+    public function testEncryptDecryptRoundTripForAllCiphers()
+    {
+        $ciphers = [
+            Encryption\Encrypter::AES_128_CBC,
+            Encryption\Encrypter::AES_256_CBC,
+            Encryption\Encrypter::AES_128_GCM,
+            Encryption\Encrypter::AES_256_GCM,
+        ];
+
+        foreach ($ciphers as $cipher) {
+            $encrypter = Encryption\Encrypter::create($cipher);
+            $encrypted = $encrypter->encrypt('password');
+            $decrypted = $encrypter->decrypt($encrypted);
+            $this->assertEquals('password', $decrypted, "Round trip failed for cipher {$cipher}");
+        }
+    }
+
 }
