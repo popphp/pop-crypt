@@ -57,9 +57,6 @@ abstract class AbstractEncrypter implements EncrypterInterface
      */
     public function __construct(string $key, string $cipher = 'aes-256-cbc', bool $raw = true)
     {
-        if (!static::isValid($key, $cipher, $raw)) {
-            throw new Exception('Error: Invalid key or unsupported cipher.');
-        }
         $this->setCipher($cipher);
         $this->setKey($key, $raw);
     }

@@ -36,23 +36,12 @@ class Hasher
      */
     public static function create(mixed $algorithm, array $options = []): AbstractHasher
     {
-        if (!in_array($algorithm, [PASSWORD_BCRYPT, PASSWORD_ARGON2I, PASSWORD_ARGON2ID])) {
-            throw new Exception('Error: Invalid hashing algorithm.');
-        }
-
-        switch ($algorithm) {
-            case PASSWORD_BCRYPT:
-                $hasher = new BcryptHasher();
-                break;
-            case PASSWORD_ARGON2I:
-                $hasher = new Argon2IHasher();
-                break;
-            case PASSWORD_ARGON2ID:
-                $hasher = new Argon2IdHasher();
-                break;
-            default:
-                throw new Exception('Error: Invalid hashing algorithm.');
-        }
+        $hasher = match ($algorithm) {
+            PASSWORD_BCRYPT   => new BcryptHasher(),
+            PASSWORD_ARGON2I  => new Argon2IHasher(),
+            PASSWORD_ARGON2ID => new Argon2IdHasher(),
+            default           => throw new Exception('Error: Invalid hashing algorithm.'),
+        };
 
         if (!empty($options)) {
             $hasher->setOptions($options);

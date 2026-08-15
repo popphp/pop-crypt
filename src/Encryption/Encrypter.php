@@ -218,14 +218,15 @@ class Encrypter extends AbstractEncrypter
         $validMac  = null;
 
         foreach ($this->getAllKeys() as $key) {
-            $encKey = ($aead) ? $key : hash_hkdf('sha256', $key, 32, self::HKDF_ENCRYPTION_INFO);
-
-            if (!$aead) {
+            if ($aead) {
+                $encKey = $key;
+            } else {
                 $macKey   = hash_hkdf('sha256', $key, 32, self::HKDF_MAC_INFO);
                 $validMac = hash_equals(hash_hmac('sha256', $payload['iv'] . $payload['value'], $macKey), $payload['mac']);
                 if (!$validMac) {
                     continue;
                 }
+                $encKey = hash_hkdf('sha256', $key, 32, self::HKDF_ENCRYPTION_INFO);
             }
 
             $decrypted = openssl_decrypt($payload['value'], $this->cipher, $encKey, 0, $iv, $tag);
