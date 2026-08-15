@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Pop PHP Framework (https://www.popphp.org/)
  *
@@ -49,6 +50,8 @@ class Hasher
             case PASSWORD_ARGON2ID:
                 $hasher = new Argon2IdHasher();
                 break;
+            default:
+                throw new Exception('Error: Invalid hashing algorithm.');
         }
 
         if (!empty($options)) {

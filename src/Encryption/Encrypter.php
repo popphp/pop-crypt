@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Pop PHP Framework (https://www.popphp.org/)
  *
@@ -87,7 +88,7 @@ class Encrypter extends AbstractEncrypter
         if (!empty($_ENV['APP_CIPHER_METHOD'])) {
             $cipher = trim($_ENV['APP_CIPHER_METHOD']);
         }
-        if (empty($key) && !empty($_ENV['APP_KEY'])) {
+        if (!empty($_ENV['APP_KEY'])) {
             $key = trim($_ENV['APP_KEY']);
         }
         if (!empty($_ENV['APP_PREVIOUS_KEYS'])) {
@@ -115,7 +116,7 @@ class Encrypter extends AbstractEncrypter
      */
     public static function isAvailable(string $cipher): bool
     {
-        return isset(static::$ciphers[strtolower($cipher)]);
+        return isset(self::$ciphers[strtolower($cipher)]);
     }
 
     /**
@@ -129,13 +130,13 @@ class Encrypter extends AbstractEncrypter
     public static function isValid(string $key, string $cipher, bool $raw = true): bool
     {
         $cipher = strtolower($cipher);
-        if (!isset(static::$ciphers[$cipher])) {
+        if (!isset(self::$ciphers[$cipher])) {
             return false;
         }
         if (!$raw) {
             $key = base64_decode($key);
         }
-        return (mb_strlen($key, '8bit') === static::$ciphers[$cipher]['size']);
+        return (mb_strlen($key, '8bit') === self::$ciphers[$cipher]['size']);
     }
 
     /**
@@ -147,7 +148,7 @@ class Encrypter extends AbstractEncrypter
      */
     public static function generateKey(string $cipher, bool $raw = true): string
     {
-        $key = random_bytes((static::$ciphers[strtolower($cipher)]['size'] ?? 32));
+        $key = random_bytes((self::$ciphers[strtolower($cipher)]['size'] ?? 32));
         return ($raw) ? $key : base64_encode($key);
     }
 
@@ -159,15 +160,15 @@ class Encrypter extends AbstractEncrypter
      */
     public function encrypt(#[\SensitiveParameter] string $value): string
     {
-        $aead   = static::$ciphers[$this->cipher]['aead'];
+        $aead   = self::$ciphers[$this->cipher]['aead'];
         $iv     = random_bytes(openssl_cipher_iv_length(strtolower($this->cipher)));
         $tag    = '';
-        $encKey = ($aead) ? $this->key : hash_hkdf('sha256', $this->key, 32, static::HKDF_ENCRYPTION_INFO);
+        $encKey = ($aead) ? $this->key : hash_hkdf('sha256', $this->key, 32, self::HKDF_ENCRYPTION_INFO);
         $value  = openssl_encrypt($value, $this->cipher, $encKey, 0, $iv, $tag);
         $iv     = base64_encode($iv);
         $tag    = base64_encode(($tag ?? ''));
         $mac    = (!$aead) ?
-            hash_hmac('sha256', $iv . $value, hash_hkdf('sha256', $this->key, 32, static::HKDF_MAC_INFO)) : '';
+            hash_hmac('sha256', $iv . $value, hash_hkdf('sha256', $this->key, 32, self::HKDF_MAC_INFO)) : '';
 
         $json = json_encode([
             'iv'    => $iv,
@@ -194,7 +195,7 @@ class Encrypter extends AbstractEncrypter
             throw new Exception('Error: The payload is not valid data.');
         }
 
-        $aead = static::$ciphers[$this->cipher]['aead'];
+        $aead = self::$ciphers[$this->cipher]['aead'];
 
         // Validate that iv and value are strings (prevent TypeError from base64_decode)
         if (!is_string($payload['iv']) || !is_string($payload['value'])) {
@@ -217,10 +218,10 @@ class Encrypter extends AbstractEncrypter
         $validMac  = null;
 
         foreach ($this->getAllKeys() as $key) {
-            $encKey = ($aead) ? $key : hash_hkdf('sha256', $key, 32, static::HKDF_ENCRYPTION_INFO);
+            $encKey = ($aead) ? $key : hash_hkdf('sha256', $key, 32, self::HKDF_ENCRYPTION_INFO);
 
             if (!$aead) {
-                $macKey   = hash_hkdf('sha256', $key, 32, static::HKDF_MAC_INFO);
+                $macKey   = hash_hkdf('sha256', $key, 32, self::HKDF_MAC_INFO);
                 $validMac = hash_equals(hash_hmac('sha256', $payload['iv'] . $payload['value'], $macKey), $payload['mac']);
                 if (!$validMac) {
                     continue;

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Pop PHP Framework (https://www.popphp.org/)
  *
@@ -37,8 +38,7 @@ class BcryptHasher extends AbstractHasher
      *
      * Instantiate the Bcrypt object
      *
-     * @param int     $cost
-     * @param ?string $salt
+     * @param int $cost
      */
     public function __construct(int $cost = 12)
     {
