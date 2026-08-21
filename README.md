@@ -11,6 +11,7 @@ pop-crypt
 * [Quickstart](#quickstart)
 * [Hashing](#hashing)
 * [Encryption](#encryption)
+* [Signature Verification](#signature-verification)
 
 Overview
 --------
@@ -232,5 +233,78 @@ $encrypter->setPreviousKeys([$oldKey1, $oldKey2]);
 // APP_PREVIOUS_KEYS=<base64-encoded key>,<base64-encoded key>
 $encrypter = Encryption\SodiumEncrypter::load();
 ```
+
+[Top](#pop-crypt)
+
+Signature Verification
+----------------------
+
+The `Verifier` class provides static methods to verify digital signatures created with HMAC, RSA, or ECDSA algorithms. 
+It supports verification against a shared secret (HMAC) or a public key (RSA/ECDSA), using configurable hash algorithms 
+(default `sha256`).
+
+### HMAC Verification
+
+Verify an HMAC signature using a shared secret:
+
+```php
+use Pop\Crypt\Signature;
+
+$data      = 'The quick brown fox';
+$secret    = 'my-secret-key';
+$signature = hash_hmac('sha256', $data, $secret, true);
+
+if (Signature\Verifier::hmac($data, $signature, $secret, 'sha256')) {
+    echo 'Signature is valid';
+} else {
+    echo 'Signature is invalid';
+}
+```
+
+### RSA Verification
+
+Verify an RSA signature using a public key:
+
+```php
+use Pop\Crypt\Signature;
+
+$data      = 'The quick brown fox';
+$publicKey = file_get_contents('/path/to/public.pem');
+
+try {
+    if (Signature\Verifier::rsa($data, $signature, $publicKey, 'sha256')) {
+        echo 'Signature is valid';
+    } else {
+        echo 'Signature is invalid';
+    }
+} catch (\Pop\Crypt\Exception $e) {
+    echo 'Error: ' . $e->getMessage();
+}
+```
+
+### ECDSA Verification
+
+Verify an ECDSA (elliptic curve) signature using a public key:
+
+```php
+use Pop\Crypt\Signature;
+
+$data      = 'The quick brown fox';
+$publicKey = file_get_contents('/path/to/ec-public.pem');
+
+try {
+    if (Signature\Verifier::ec($data, $signature, $publicKey, 'sha256')) {
+        echo 'Signature is valid';
+    } else {
+        echo 'Signature is invalid';
+    }
+} catch (\Pop\Crypt\Exception $e) {
+    echo 'Error: ' . $e->getMessage();
+}
+```
+
+**Note:** The `rsa()` and `ec()` methods throw `Pop\Crypt\Exception` when the key material is malformed or unusable 
+(e.g., invalid PEM format, unsupported algorithm). A return value of `false` indicates the signature verification 
+failed, not a key error.
 
 [Top](#pop-crypt)
