@@ -270,6 +270,7 @@ use Pop\Crypt\Signature;
 
 $data      = 'The quick brown fox';
 $publicKey = file_get_contents('/path/to/public.pem');
+$signature = file_get_contents('/path/to/signature.bin'); // the raw signature bytes to verify
 
 try {
     if (Signature\Verifier::rsa($data, $signature, $publicKey, 'sha256')) {
@@ -291,6 +292,7 @@ use Pop\Crypt\Signature;
 
 $data      = 'The quick brown fox';
 $publicKey = file_get_contents('/path/to/ec-public.pem');
+$signature = file_get_contents('/path/to/signature.bin'); // the raw signature bytes to verify
 
 try {
     if (Signature\Verifier::ec($data, $signature, $publicKey, 'sha256')) {
